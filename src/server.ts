@@ -49,7 +49,7 @@ const swaggerOptions = {
             }
         ]
     },
-    apis: ['./modules/users/*.js', './modules/forum/*.js', './modules/subjects/*.js'] // Asegúrate de que esta ruta apunta a tus rutas
+    apis: ['./build/modules/users/*.js', './build/modules/forum/*.js', './build/modules/subjects/*.js'] // Asegúrate de que esta ruta apunta a tus rutas
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
@@ -71,6 +71,10 @@ app.get('/', (req, res) => {
 
 // Conexión a MongoDB
 //mongoose;
+console.log('–––––––––––––––––––––');
+console.log(' MONGODB_URI:', process.env.MONGODB_URI);
+console.log(' Directorio actual:', process.cwd());
+console.log('–––––––––––––––––––––');
 mongoose
     .connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/seminariAPI')
     .then(() => console.log('Connected to DB'))
