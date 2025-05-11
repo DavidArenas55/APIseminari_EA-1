@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function routeNotFound(req: Request, res: Response, next: NextFunction) {
     const error = new Error('Route Not Found');
 

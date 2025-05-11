@@ -1,8 +1,8 @@
 import Subject, { ISubject } from './subject_models.js';
-import User from '../users/user_models.js';
+//import User from '../users/user_models.js';
 import { getUserById } from '../users/user_service.js';
-import mongoose from 'mongoose';
-import { error } from 'console';
+//import mongoose from 'mongoose';
+//import { error } from 'console';
 
 export const createSubject = async (SubjectData: Partial<ISubject>, arrayIDUsers: string[]) => {    
     
@@ -12,15 +12,19 @@ export const createSubject = async (SubjectData: Partial<ISubject>, arrayIDUsers
                 await getUserById(idAlumni); //s'utilitza el servei de users
             });
             await Promise.all(allIDexist);
-        }catch(error:any){
-            throw new Error(`El ID de algun alumno no existe, error: ${error}`);
+        }catch(error: unknown){
+            if (error instanceof Error) {
+                throw new Error(`El ID de algun alumno no existe, error: ${error.message}`);
+            } else {
+                throw new Error('El ID de algun alumno no existe, error desconocido');
+            }
         }
 
         const subject = new Subject(SubjectData);
         const result = await subject.save();
         
         const insertPromises = arrayIDUsers.map(async (element) => {
-            const resu = await Subject.findByIdAndUpdate(result._id.toString(),{ $push: { alumni: element } },{ new: true }); 
+            await Subject.findByIdAndUpdate(result._id.toString(), { $push: { alumni: element } }, { new: true }); 
         });
 
         await Promise.all(insertPromises)
@@ -55,8 +59,12 @@ export const getSubjectAlumniById = async (id: string) => {
 export const insertAlumniToSubjectById = async (idSubject: string, idAlumni: string) => {
     try{
         await getUserById(idAlumni); 
-    }catch(error:any){
-        throw new Error(`El ID del alumno no existe, error: ${error}`);
+    }catch(error: unknown){
+        if (error instanceof Error) {
+            throw new Error(`El ID del alumno no existe, error: ${error.message}`);
+        } else {
+            throw new Error('El ID del alumno no existe, error desconocido');
+        }
     }
     return await Subject.findByIdAndUpdate(
         idSubject,{ $push: { alumni: idAlumni } },{ new: true } // Torna el document actualitzat
